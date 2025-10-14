@@ -1,5 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime
-from sqlalchemy.sql import func
+from sqlalchemy import Column, Integer, String, Float, DateTime, func
 from .database import Base
 
 class SensorData(Base):
@@ -9,13 +8,13 @@ class SensorData(Base):
     topic = Column(String(255), index=True)
     value = Column(Float)
     unit = Column(String(50))
-    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+    timestamp = Column(DateTime(timezone=False), server_default=func.now())
 
 class ProductionLog(Base):
     __tablename__ = "production_logs"
 
     id = Column(Integer, primary_key=True, index=True)
     product_id = Column(String(100))
-    status = Column(String(50)) 
+    status = Column(String(50))
     details = Column(String(500))
-    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+    timestamp = Column(DateTime(timezone=False), server_default=func.now())

@@ -1,22 +1,30 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
 
-# Este é o nosso "contrato" de como os dados de um sensor
-# devem ser representados na API.
-
+# Schema base para dados de sensor, usado para leitura e retorno na API
 class SensorData(BaseModel):
-    # Campos que esperamos que existam na nossa API de resposta
     id: int
     topic: str
     value: float
     unit: str
     timestamp: datetime
 
-    # Esta classe de configuração é uma "ponte" entre o modelo de banco de dados
-    # do SQLAlchemy (que é um objeto) e o modelo de API do Pydantic (que
-    # precisa ser convertido para JSON). A linha orm_mode = True faz essa
-    # conversão de forma automática e mágica.
     class Config:
-        from_attributes = True # Em versões mais novas do Pydantic, usa-se 'from_attributes'
-        orm_mode = True # Em versões mais antigas, usa-se 'orm_mode'
+        from_attributes = True
+
+# Schema para criação de um log de produção (exemplo para o futuro)
+class ProductionLogBase(BaseModel):
+    product_id: str = Field(..., example="PROD-00123")
+    status: str = Field(..., example="Completed")
+    details: Optional[str] = Field(None, example="Quality check passed.")
+
+class ProductionLogCreate(ProductionLogBase):
+    pass
+
+class ProductionLog(ProductionLogBase):
+    id: int
+    timestamp: datetime
+
+    class Config:
+        from_attributes = True

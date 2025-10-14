@@ -1,156 +1,132 @@
-# Projeto de Integração IoT: MQTT, MySQL e API REST
+# Projeto IoT - API para Bancada Didática Camila
 
-![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.103.2-009688.svg)
-![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-blue.svg)
-![Paho-MQTT](https://img.shields.io/badge/Paho--MQTT-1.6.1-red.svg)
+Este projeto implementa uma solução completa para consumir dados de sensores via MQTT, persistir essas informações em um banco de dados MySQL e expor os dados através de uma API RESTful construída com FastAPI.
 
-Projeto desenvolvido para a disciplina de Internet das Coisas (IoT), que implementa uma solução completa para coletar dados da **Bancada Didática 4.0 – Nível 1 (Camila)**. Os dados são consumidos via MQTT, persistidos em um banco de dados MySQL e expostos através de uma API RESTful construída com FastAPI.
+## Funcionalidades
 
-## 🏛️ Arquitetura do Sistema
+-   **Consumidor MQTT**: Um script que se conecta a um broker MQTT, escuta um tópico específico (`smart40n1`) e processa as mensagens recebidas.
+-   **Persistência de Dados**: Os dados de sensores (temperatura e umidade) são salvos em um banco de dados MySQL utilizando SQLAlchemy.
+-   **API RESTful**: Uma API robusta e documentada (com Swagger UI) para consultar os dados armazenados.
 
-O fluxo de dados do projeto segue a seguinte arquitetura:
+## Estrutura do Projeto
 
-`Bancada Didática (Publisher) -> Broker MQTT (HiveMQ Cloud) -> Consumidor Python (Paho-MQTT) -> Banco de Dados (MySQL) -> API REST (FastAPI) -> Cliente (Navegador/Swagger)`
+O projeto segue os princípios de **Separação de Responsabilidades (SoC)** e **Don't Repeat Yourself (DRY)**:
 
-## ✨ Funcionalidades Principais
+```
+PROJETO-IOT-CAMILA/
+├── app/                  # Contém toda a lógica da API FastAPI
+│   ├── routers/          # Controllers da API
+│   ├── crud.py           # Funções de acesso ao banco de dados
+│   ├── database.py       # Configuração da conexão com o banco
+│   ├── main.py           # Ponto de entrada da API
+│   ├── models.py         # Modelos de tabelas (SQLAlchemy)
+│   └── schemas.py        # Modelos de dados da API (Pydantic)
+├── mqtt_consumer/        # Lógica do consumidor MQTT
+├── .env                  # Arquivo de credenciais (local)
+├── .env.example          # Template para o arquivo .env
+├── README.md             # Esta documentação
+└── requirements.txt      # Dependências do projeto
+```
 
-* **Consumidor MQTT:** Um serviço robusto que se conecta de forma segura (TLS/SSL) a um broker MQTT, se inscreve em tópicos e processa as mensagens recebidas em tempo real.
-* **Processamento Inteligente:** A lógica do consumidor diferencia os tipos de dados recebidos (numéricos como temperatura/umidade e textuais como status de qualidade), tratando e armazenando-os adequadamente.
-* **Persistência de Dados:** Utiliza SQLAlchemy para mapear os dados recebidos para tabelas em um banco de dados MySQL, garantindo a integridade e a estruturação das informações.
-* **API RESTful:** Uma API desenvolvida com FastAPI que expõe os dados armazenados através de endpoints claros e bem definidos.
-* **Documentação Automática:** A API conta com uma documentação interativa e didática gerada automaticamente pelo Swagger UI, facilitando os testes e o uso.
+## Tecnologias Utilizadas
 
-## 🛠️ Tecnologias Utilizadas
+-   **Python 3.10+**
+-   **FastAPI**: Framework para a construção da API.
+-   **SQLAlchemy**: ORM para interação com o banco de dados.
+-   **Paho-MQTT**: Cliente MQTT para Python.
+-   **MySQL**: Banco de dados relacional.
+-   **Uvicorn**: Servidor ASGI para rodar a API.
+-   **Dotenv**: Para gerenciamento de variáveis de ambiente.
 
-| Ferramenta         | Versão/Tipo     | Descrição                                         |
-| ------------------ | --------------- | ------------------------------------------------- |
-| **Linguagem** | Python 3.10+    | Base de todo o desenvolvimento.                   |
-| **API Framework** | FastAPI         | Para a construção da API RESTful de alta performance. |
-| **ORM** | SQLAlchemy      | Para a comunicação com o banco de dados MySQL.      |
-| **Cliente MQTT** | Paho-MQTT       | Para a conexão com o broker e consumo de mensagens. |
-| **Banco de Dados** | MySQL           | Para o armazenamento persistente dos dados.         |
-| **Servidor API** | Uvicorn         | Para rodar a aplicação FastAPI.                   |
-| **Variáveis de Ambiente** | python-dotenv | Para gerenciar credenciais de forma segura.        |
-| **Validação** | Pydantic        | Utilizado pelo FastAPI para validar dados.        |
+## Como Rodar o Projeto
 
-## 🚀 Como Rodar o Projeto
+### Pré-requisitos
 
-Siga os passos abaixo para configurar e executar o projeto em seu ambiente local.
+-   Python 3.10 ou superior
+-   Um servidor MySQL em execução
+-   Um broker MQTT (como o [HiveMQ Cloud](https://www.hivemq.com/mqtt-cloud-broker/))
 
-### 1. Pré-requisitos
-
-* Python 3.10 ou superior
-* Git
-* Um servidor MySQL em execução
-* Um broker MQTT (o projeto está configurado para o HiveMQ Cloud, mas pode ser adaptado)
-
-### 2. Instalação
+### 1. Clone o Repositório
 
 ```bash
-# 1. Clone o repositório
-git clone [https://github.com/EnzoQuinalha/projeto-iot-camila.git](https://github.com/EnzoQuinalha/projeto-iot-camila.git)
-cd projeto-iot-camila
+git clone [https://github.com/seu_usuario/PROJETO-IOT-CAMILA.git](https://github.com/seu_usuario/PROJETO-IOT-CAMILA.git)
+cd PROJETO-IOT-CAMILA
+```
 
-# 2. Crie e ative um ambiente virtual
+### 2. Crie um Ambiente Virtual
+
+É uma boa prática isolar as dependências do projeto.
+
+```bash
+# Windows
 python -m venv venv
-# No Windows:
-# venv\Scripts\activate
-# No Linux/macOS:
-# source venv/bin/activate
+venv\Scripts\activate
 
-# 3. Instale as dependências do projeto
+# Linux / macOS
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Instale as Dependências
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configuração
+### 4. Configure as Variáveis de Ambiente
 
-1.  **Banco de Dados:**
-    * Acesse seu servidor MySQL como `root`.
-    * Crie o banco de dados e o usuário que a aplicação irá utilizar:
-        ```sql
-        CREATE DATABASE iot_camila_db;
-        CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
-        GRANT ALL PRIVILEGES ON iot_camila_db.* TO 'admin'@'localhost';
-        FLUSH PRIVILEGES;
-        ```
+Copie o arquivo de exemplo e preencha com suas credenciais.
 
-2.  **Variáveis de Ambiente:**
-    * Renomeie o arquivo `.env.example` (se houver) para `.env` ou crie um novo.
-    * Preencha o arquivo `.env` com suas credenciais:
-        ```ini
-        # Configuração do Banco de Dados
-        DB_HOST="localhost"
-        DB_USER="admin"
-        DB_PSWD="admin"
-        DB_NAME="iot_camila_db"
+```bash
+cp .env.example .env
+```
 
-        # Variáveis do Broker MQTT (Ex: HiveMQ Cloud)
-        MQTT_BROKER="seu-broker-host.s1.eu.hivemq.cloud"
-        MQTT_PORT=8883
-        MQTT_USER="seu-usuario-mqtt"
-        MQTT_PSWD="sua-senha-mqtt"
-        MQTT_TOPIC="#"
-        ```
+Agora, edite o arquivo `.env` com as informações do seu banco de dados e do seu broker MQTT.
 
-### 4. Execução
+### 5. Rode o Consumidor MQTT
 
-O sistema precisa de dois terminais rodando simultaneamente.
+Este script ficará rodando em um terminal para receber e salvar as mensagens.
 
-**Terminal 1: Iniciar o Consumidor MQTT**
-(Este terminal ficará "ouvindo" as mensagens da bancada e salvando no banco)
 ```bash
 python mqtt_consumer/consumer.py
 ```
 
-**Terminal 2: Iniciar a API REST**
-(Este terminal irá "servir" os dados para consulta)
+### 6. Rode a API
+
+Em um **outro terminal** (com o ambiente virtual ativado), inicie o servidor da API.
+
 ```bash
 uvicorn app.main:app --reload
 ```
-A API estará disponível em `http://127.0.0.1:8000`.
 
-## 📖 Uso da API
+A flag `--reload` faz com que o servidor reinicie automaticamente após qualquer alteração no código.
 
-Acesse a documentação interativa completa em [**http://127.0.0.1:8000/docs**](http://127.0.0.1:8000/docs).
+## Como Usar a API
 
-### Exemplos de Rotas
+Após iniciar o servidor, a API estará acessível em `http://127.0.0.1:8000`.
 
-#### 1. `GET /data/sensors`
-Retorna os últimos registros de **todos** os sensores.
+### Documentação Interativa (Swagger)
 
-**Exemplo de Resposta:**
-```json
-[
-  {
-    "id": 1,
-    "topic": "smart40n1/temperatura",
-    "value": 25.5,
-    "unit": "°C",
-    "timestamp": "2025-10-14T12:30:00"
-  },
-  {
-    "id": 2,
-    "topic": "smart40n1/umidade",
-    "value": 65,
-    "unit": "%",
-    "timestamp": "2025-10-14T12:30:15"
-  }
-]
+A melhor forma de explorar e testar a API é através da documentação interativa, gerada automaticamente pelo FastAPI.
+
+-   **Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+-   **ReDoc**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+
+### Exemplo de Requisição
+
+Você pode usar ferramentas como `curl`, Thunder Client (extensão do VS Code) ou a própria documentação para testar.
+
+**Buscar todos os dados de sensores:**
+```
+GET [http://127.0.0.1:8000/sensors/](http://127.0.0.1:8000/sensors/)
 ```
 
-#### 2. `GET /data/sensors/temperatura`
-Retorna apenas os registros de **temperatura**.
+**Buscar apenas dados de umidade:**
+```
+GET [http://127.0.0.1:8000/sensors/?topic=umidade](http://127.0.0.1:8000/sensors/?topic=umidade)
+```
 
-**Exemplo de Resposta:**
-```json
-[
-  {
-    "id": 1,
-    "topic": "smart40n1/temperatura",
-    "value": 25.5,
-    "unit": "°C",
-    "timestamp": "2025-10-14T12:30:00"
-  }
-]
+**Buscar dados de temperatura com paginação (pula os 5 primeiros e pega os próximos 10):**
+```
+GET [http://127.0.0.1:8000/sensors/?topic=temperatura&skip=5&limit=10](http://127.0.0.1:8000/sensors/?topic=temperatura&skip=5&limit=10)
 ```
